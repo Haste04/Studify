@@ -1,7 +1,7 @@
 import React from "react";
 
 const Pet = () => {
-  return <div>Pettt</div>;
+  return <div>Pettstt</div>;
 };
 
 export default Pet;
