@@ -7,9 +7,13 @@ const StreakContext = createContext();
 export const StreakProvider = ({ children }) => {
   const [streakData, setStreakData] = useState({
 <<<<<<< ours
+<<<<<<< ours
     streakDays: 3,
 =======
     streakDays: 7,
+>>>>>>> theirs
+=======
+    streakDays: 7
 >>>>>>> theirs
   });
 
