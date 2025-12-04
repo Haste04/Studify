@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Design from "/logindesign.gif";
 import Logo from "/logo.png";
-import home from "../HomePage/homepage";
+import studysession from "../StudySession/StudySessions";
 import register from "../SingupPage/Signup";
 import { useNavigate } from "react-router-dom";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -51,7 +51,7 @@ const Login = () => {
     );
 
     if (foundUser) {
-      navigate("/home"); // Navigate to HomePage
+      navigate("/studysession"); // Navigate to HomePage
     } else {
       setValid((prev) => ({ ...prev, valid: true }));
     }

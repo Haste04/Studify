@@ -2,99 +2,138 @@ import React, { useEffect, useState } from "react";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
 
+const MODES = {
+  pomodoro: 1500,
+  short: 300,
+  long: 900,
+};
+
+const modeType = [
+  { id: "pomodoro", label: "Pomodoro", shortphrase: "Shhhhhhh......." },
+  { id: "short", label: "Short Break", shortphrase: "Take a short break!" },
+  {
+    id: "long",
+    label: "Long Break",
+    shortphrase: "Enjoy it, you deserved it!",
+  },
+];
+
+// Define theme colors per mode
+const modeStyles = {
+  pomodoro: {
+    container: "bg-[#3A7BCE] text-[#D8EAFF]",
+    topBar: "bg-[#214886]",
+    activeButton: "bg-[#17335E] ",
+    inactiveHover: "hover:bg-[#112f61] text-[#e5f1fd]",
+    startButton: "bg-[#234269]",
+    pauseButton: "bg-[#284A77]",
+  },
+  short: {
+    container: "bg-[#5FCE8D] text-[#CDF3D5]",
+    topBar: "bg-[#359148]",
+    activeButton: "bg-[#4DA45F] ", // slightly darker for visibility
+    inactiveHover: "hover:bg-[#5dc772]",
+    startButton: "bg-[#306747]",
+    pauseButton: "bg-[#367550]",
+  },
+  long: {
+    container: "bg-[#CEBD5F] text-[#F9ECA0]",
+    topBar: "bg-[#8B7D32]",
+    activeButton: "bg-[#7A6829]",
+    inactiveHover: "hover:bg-[#9c8e3d] ",
+    startButton: "bg-[#675F30]",
+    pauseButton: "bg-[#756B36]",
+  },
+};
+
 const Sessions = () => {
-  const category = [{ id: 1, title: "Math" }];
-
-  // Track active timer (only one at a time)
+  const [activeMode, setActiveMode] = useState("pomodoro");
+  const [timeLeft, setTimeLeft] = useState(MODES.pomodoro);
   const [activeId, setActiveId] = useState(null);
-  const [isActive, setIsActive] = useState(false);
 
-  // Track each category’s time (in seconds)
-  const [times, setTimes] = useState(
-    category.reduce((acc, cat) => {
-      acc[cat.id] = 0;
-      return acc;
-    }, {})
-  );
-
-  // useEffect to run timer only for the active category
+  // Timer effect
   useEffect(() => {
     let interval = null;
-
     if (activeId !== null) {
       interval = setInterval(() => {
-        setTimes((prevTimes) => ({
-          ...prevTimes,
-          [activeId]: prevTimes[activeId] + 1,
-        }));
+        setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
       }, 1000);
     }
-
     return () => clearInterval(interval);
   }, [activeId]);
 
-  // Convert seconds → HH:MM:SS
   const formatTime = (totalSeconds) => {
-    const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
-    const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(
-      2,
-      "0"
-    );
+    const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
     const seconds = String(totalSeconds % 60).padStart(2, "0");
-    return `${hours}:${minutes}:${seconds}`;
+    return `${minutes}:${seconds}`;
   };
 
-  // Handle play/pause click
-  const handleToggle = (id) => {
-    if (activeId === id) {
-      // If same timer clicked → pause it
-      setActiveId(null);
-    } else {
-      // If another timer clicked → stop others, start this one
-      setActiveId(id);
-    }
+  const switchMode = (mode) => {
+    setActiveMode(mode);
+    setTimeLeft(MODES[mode]);
+    setActiveId(null);
   };
-  //gg
+
+  const handleToggle = () => {
+    setActiveId((prev) => (prev ? null : 1));
+  };
+
   return (
-    <div className="w-full h-full flex flex-col justify-center items-center bg-[#3A7BCE] rounded-[30px] text-[#e5f1fd] transition-all ease-in-out duration-200 p-5 pl-10">
-      {category.map((cat) => (
-        <div className="">
-          <span className="flex flex-center text-[100px] font-sans font-bold pb-5">
-            {cat.title}
-            {cat == activeId}
-          </span>
+    <div
+      className={`font-sans w-full flex flex-col justify-center items-center rounded-[30px] p-5 ${modeStyles[activeMode].container}`}
+    >
+      {/* TOP BUTTONS */}
+      <div
+        className={`flex justify-center rounded-[10px] h-12 items-center mb-5 text-xl font-semibold w-full ${modeStyles[activeMode].topBar}`}
+      >
+        {modeType.map((btn, index) => {
+          // Add rounded only to first and last buttons for smooth edges
+          let roundedClass = "";
+          if (index === 0) roundedClass = "rounded-l-[10px]";
+          if (index === modeType.length - 1) roundedClass = "rounded-r-[10px]";
 
-          {/* 🕒 Timer display */}
-          <span className="flex flex-center text-[40px] font-sans font-bold pb-5">
-            {formatTime(times[cat.id])}
-          </span>
-          <span className="flex flex-center animate-pulse text-[20px]">
-            "Shhhhhhhh....."
-          </span>
-          {/* ▶️ Play / ⏸ Pause button */}
-          <div className="flex flex-center pt-5">
-            <div className="hover:scale-110   transition-all ease-in-out duration-200 flex align-middle justify-center pb-5 h-30 w-30 bg-[#062a58] rounded-full">
-              <button
-                onClick={() => handleToggle(cat.id)}
-                className="text-[65px]  text-[#e5f1fd]"
-              >
-                {activeId === cat.id ? (
-                  <PauseRoundedIcon
-                    fontSize="inherit"
-                    className="cursor-pointer transition-all ease-in-out duration-200"
-                  />
-                ) : (
-                  <PlayArrowRoundedIcon
-                    fontSize="inherit"
-                    c
-                    className="cursor-pointer  transition-all ease-in-out duration-200"
-                  />
-                )}
-              </button>
-            </div>
-          </div>
+          return (
+            <button
+              key={btn.id}
+              onClick={() => switchMode(btn.id)}
+              className={`flex-1 h-full transition-all duration-200 cursor-pointer ${roundedClass} ${
+                activeMode === btn.id
+                  ? modeStyles[activeMode].activeButton
+                  : `text-[#e5f1fd] ${modeStyles[activeMode].inactiveHover}`
+              }`}
+            >
+              {btn.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* TIMER DISPLAY */}
+      <span className="flex justify-center text-[100px] font-bold pb-5">
+        {formatTime(timeLeft)}
+      </span>
+
+      {/* SHORT PHRASE */}
+      <span className="flex justify-center animate-pulse text-[20px]">
+        {modeType.find((m) => m.id === activeMode).shortphrase}
+      </span>
+
+      {/* PLAY / PAUSE BUTTON */}
+      {/* PLAY / PAUSE BUTTON */}
+      <div className="pt-5">
+        <div
+          onClick={handleToggle}
+          className={`flex justify-center items-center hover:scale-110 transition-all w-full px-20 duration-200 pb-5 cursor-pointer pt-2 text-[40px] font-semibold rounded-2xl 
+      ${
+        activeId === null
+          ? modeStyles[activeMode].startButton
+          : modeStyles[activeMode].pauseButton
+      }
+    `}
+        >
+          {activeId ? "Pause" : "Start"}
         </div>
-      ))}
+      </div>
     </div>
   );
 };

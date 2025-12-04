@@ -15,7 +15,6 @@ const Sidebar = () => {
   const [activeButton, setActiveButton] = useState(null); // default active button
 
   const buttons = [
-    { name: "Home", icon: <HomeIcon fontSize="large" />, path: "/home" },
     {
       name: "Study Session",
       icon: <AutoStoriesRoundedIcon fontSize="large" />,
@@ -27,11 +26,7 @@ const Sidebar = () => {
       path: "/friends",
     },
     { name: "Pet", icon: <PetsRoundedIcon fontSize="large" />, path: "/pet" },
-    {
-      name: "Notifications",
-      icon: <NotificationsActiveRoundedIcon fontSize="large" />,
-      path: "/notifications",
-    },
+
     {
       name: "Profile",
       icon: <PersonRoundedIcon fontSize="large" />,
